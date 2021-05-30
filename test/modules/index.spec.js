@@ -3,7 +3,7 @@ const express = require('express');
 const expect = require('chai').expect;
 const request = require('supertest');
 const path = require("path");
-require('dotenv').config('../../.env')
+require('dotenv').config({path: '../../.env'});
 const app = express();
 const databaseHelper = require("../../helpers/database.helper");
 
