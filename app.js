@@ -5,7 +5,8 @@ const morganLogger = require('morgan');
 const app = express();
 const router = require('./routes');
 const dbConnector = require('./helpers/database.helper');
-
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
 const cors = require('cors');
 app.use(cors());
 app.options('*', cors());
@@ -29,6 +30,7 @@ app.use((req, res, next) => {
 
 app.use('/api', router);
 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 //route not found error handler
 app.use((req, res, next) => {
     const error = new Error('Not Found');

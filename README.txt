@@ -23,7 +23,7 @@ db.productTbl.insert([{
         "initialProductQuantity":10,
         "productPrice": 20,
         "soldProductQuantity": 0,
-        "remainingProductQuantity": 20,
+        "remainingProductQuantity": 10,
         "soldPrice": 0
         
     },{
@@ -53,8 +53,8 @@ db.productTbl.insert([{
 
 
 #documentation of api
-api is documented on swagger file
-
+api is documented on swagger file click here:
+http://localhost:5000/api-docs/
 
 #For docker
 
@@ -80,7 +80,7 @@ db.productTbl.insert([{
         "initialProductQuantity":10,
         "productPrice": 20,
         "soldProductQuantity": 0,
-        "remainingProductQuantity": 20,
+        "remainingProductQuantity": 10,
         "soldPrice": 0
         
     },{
