@@ -1,0 +1,180 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Vending Machine",
+    "description": "This is the open api for vending machine.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000/api"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Vending Machine",
+      "description": "Api for vending machine"
+    }
+    
+  ],
+  "paths": {
+    "/vending-machine/": {
+      "get": {
+        "tags": [
+          "Vending Machine"
+        ],
+        "summary": "Get all products of vending machine",
+        "operationId": "get products",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref":""
+                }
+              }
+            }
+          },
+          "responses": {
+            "default": {
+              "description": "successful operation",
+              "content": {
+                
+                  "statusCode": 200,
+                  "message": "Product info found",
+                  "data": {
+                    "_id": "60b216b0065ffd1cf3bdfd1b",
+                    "productInfo": [
+                      {
+                        "productName": "Coke",
+                        "initialProductQuantity": 10,
+                        "productPrice": 20,
+                        "remainingProductQuantity": 20
+                      },
+                      {
+                        "productName": "Pepsi",
+                        "initialProductQuantity": 10,
+                        "productPrice": 25,
+                        "remainingProductQuantity": 10
+                      },
+                      {
+                        "productName": "Mountain Dew",
+                        "initialProductQuantity": 20,
+                        "productPrice": 30,
+                        "remainingProductQuantity": 20
+                      }
+                    ]
+                  }
+                
+              }
+            }
+          }
+        } 
+      }
+    },
+
+    "/vending-machine/buy": {
+      "post": {
+        "tags": [
+          "Vending Machine"
+        ],
+        "summary": "Buy drinks",
+        "operationId": "Buy drinks",
+        "requestBody": {
+          "description": "Buy Drinks ",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/buyDrinks"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "successful operation",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/vending-machine/refund": {
+      "post": {
+        "tags": [
+          "Vending Machine"
+        ],
+        "summary": "Refund Drinks From Vending Machine",
+        "operationId": "Refund Drinks From Vending Machine",
+        "requestBody": {
+          "description": "Refund Drinks",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/refundDrinks"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "successful operation",
+            "content": {}
+          }
+        }
+    }
+    }
+  },
+  "components": {
+    "schemas": {
+      "buyDrinks":{
+        "type": "object",
+        "properties": {
+          "productName": {
+            "type": "string",
+            "enum": [
+              "Coke", "Sprite", "Mountain Dew"
+            ]
+          },
+          "productQuantity":{
+            "type": "integer"
+          },
+          "amount": {
+            "type": "integer"
+          }
+        },
+        "xml": {
+          "name": "buyDrinks"
+        }
+      },
+     
+     
+    "refundDrinks": {
+      "type": "object",
+      "properties": {
+        "productName": {
+          "type": "string",
+          "enum": [
+            "Coke", "Sprite", "Mountain Dew"
+          ]
+        },
+        "productQuantity":{
+          "type": "integer"
+        }
+      }, 
+      "xml": {
+        "name": "refundDrinks"
+      }
+    }
+   
+
+      },
+    "securitySchemes": {
+      "api_key": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  }
+}

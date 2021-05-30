@@ -6,8 +6,12 @@
     const sendResponse = require('../../../helpers/commonResponseHelper');
     const moduleConfig = require('../config/config.js')
     const helperFunct = {
-        calculateChange: (productPrice, amount) => {
-            return amount - productPrice;
+        calculateChange: (productPrice, amount, productQuantity) => {
+            return amount - (productPrice * productQuantity);
+        },
+        comparePrice: (productPrice, amount, productQuantity) => {
+            const amountEntered = (amount / productQuantity);
+            return amountEntered >= productPrice;
         }
     }
     
@@ -21,7 +25,8 @@
                     "productInfo.productName": 1,
                     "productInfo.initialProductQuantity": 1,
                     "productInfo.productPrice": 1,
-                    "productInfo.remainingProductQuantity": 1
+                    "productInfo.remainingProductQuantity": 1,
+                    "soldAmount": 1
                 }
             });
             if(getProductInfo && getProductInfo.length > 0) {
@@ -68,18 +73,29 @@
         if(productInfo && Object.keys(productInfo).length > 0) {
             const customerProduct = productInfo.productInfo.filter(item => item.productName === productName);
             let queryOpts = {}, change = 0, setOpts = {};
-            const {  productPrice, remainingProductQuantity, soldPrice, soldProductQuantity } = customerProduct[0];
-            if(productPrice <= amount) {
-                if(productPrice < amount) {
-                    change = helperFunct.calculateChange(productPrice, amount);
+            
+            const {  initialProductQuantity, productPrice, remainingProductQuantity, soldPrice, soldProductQuantity } = customerProduct[0];
+            const isPriceValid = helperFunct.comparePrice(productPrice, amount, productQuantity);
+            if(remainingProductQuantity <= 0) {
+                return sendResponse.sendValidationErrorMessage({res, message: moduleConfig.message.validationError, errors: [ {msg: 'No product left',fields: 'Product Quantity'}]})
+            }
+            if(!isPriceValid) {
+                return sendResponse.sendValidationErrorMessage({res, message: moduleConfig.message.validationError, errors: [ {msg: 'Entered price is less than actual',fields: 'Amount'}]})
+            }
+            if(remainingProductQuantity &&  (remainingProductQuantity - productQuantity) < 0) {
+                return sendResponse.sendValidationErrorMessage({res, message: moduleConfig.message.validationError, errors: [ {msg: moduleConfig.message.productMoreThanSelected, fields: 'productQuantity'}]})
+            }
+            if(productPrice   <= (amount / productQuantity)) {
+                if(productPrice < (amount / productQuantity)) {
+                    change = helperFunct.calculateChange(productPrice, amount, productQuantity);
                 }
 
             }
             queryOpts = { "productInfo.productName" : productName },
             setOpts= { 
-                "soldAmount": productInfo.soldAmount + productPrice, 
+                "soldAmount": productInfo.soldAmount + (productPrice * productQuantity), 
                 "productInfo.$.remainingProductQuantity": remainingProductQuantity - productQuantity,
-                "productInfo.$.soldPrice": soldPrice + productPrice,
+                "productInfo.$.soldPrice": soldPrice + (productPrice * productQuantity),
                 "productInfo.$.soldProductQuantity": soldProductQuantity + productQuantity
 
             }
@@ -131,18 +147,21 @@
         });
         if(productInfo && Object.keys(productInfo).length > 0) {
             const customerProduct = productInfo.productInfo.filter(item => item.productName === productName && item.initialProductQuantity !== item.remainingProductQuantity);
-            if(customerProduct && customerProduct.length > 0) {
+            if(customerProduct && customerProduct.length <= 0) {
                 return sendResponse.sendErrorResponse({res, errorMsg: moduleConfig.message.notSoldYet, status: 404});          
 
             }
             let queryOpts = {}, setOpts = {};
             const { initialProductQuantity, productPrice, remainingProductQuantity, soldPrice, soldProductQuantity } = customerProduct[0];
+            if((initialProductQuantity - remainingProductQuantity === 0) || !((initialProductQuantity - remainingProductQuantity) - productQuantity >= 0)) {
+                return sendResponse.sendErrorResponse({res, errorMsg: moduleConfig.message.productMoreThanSelected, status: 403});          
 
+            }
             queryOpts = { "productInfo.productName" : productName },
             setOpts= { 
-                "soldAmount": productInfo.soldAmount - productPrice, 
+                "soldAmount": productInfo.soldAmount - productPrice * productQuantity, 
                 "productInfo.$.remainingProductQuantity": remainingProductQuantity + productQuantity,
-                "productInfo.$.soldPrice": soldPrice - productPrice,
+                "productInfo.$.soldPrice": soldPrice - productPrice * productQuantity,
                 "productInfo.$.soldProductQuantity": soldProductQuantity + productQuantity
 
             }
@@ -157,7 +176,8 @@
                 data: {
                     productName,
                     productPrice,
-                    productQuantity
+                    productQuantity,
+                    total: productPrice * productQuantity
                 }
             });
            }
