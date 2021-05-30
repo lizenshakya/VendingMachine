@@ -12,8 +12,12 @@ Core features include:
 -clone the project.
 -the .env.example is given copy and rename to .env and fill out the data.
 -after setting up the mongo
+- run the seeder
+    -go to seeder folder
+    -node productSeeder.js
+or
 -insert the following data it is used as default case:
-db.productTbl.insert([{
+db.productTbl.insertOne({
     "_id":"60b216b0065ffd1cf3bdfd1b",
     "id":"d5bded27-cfaa-4035-b6eb-151abbcf7ab3",
     "initialAmount": 100,
@@ -43,7 +47,7 @@ db.productTbl.insert([{
         
     }]
     
-}])
+})
 
 #to run the test
 - npm run test
@@ -70,7 +74,7 @@ http://localhost:5000/api-docs/
 
     create db same as in env
 -insert the following data it is used as default case:
-db.productTbl.insert([{
+db.productTbl.insertOne({
     "_id":"60b216b0065ffd1cf3bdfd1b",
     "id":"d5bded27-cfaa-4035-b6eb-151abbcf7ab3",
     "initialAmount": 100,
@@ -100,6 +104,6 @@ db.productTbl.insert([{
         
     }]
     
-}])
+})
 
 - exit
